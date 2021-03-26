@@ -1,0 +1,86 @@
+(1) Tổng quan hệ thống
+- Đăng nhập :
+	http://192.168.0.111:3001/DangNhap/admin@gmail.com/test (method:get)
+
+- Đăng ký :
+	+ Kiểm tra có hay không tài khoản hệ thống : 
+	http://192.168.0.111:3001/KiemTraTaiKhoanHeThong/admin@gmail.com (method:get)
+	+Đăng ký:
+	http://192.168.0.111:3001/DangKyTaiKhoan (method:post)
+	(const TaiKhoan =  req.body )
+	(const MatKhau =  req.body )
+
+- Đổi mật khẩu
+	http://192.168.0.111:3001/TaiKhoanNguoiDung (method:put)
+	( const id_nguoi_dung = req.body.id_nguoi_dung )
+    	( const mat_khau = req.body.mat_khau )
+
+- Lấy thông tin nhân viên:
+	http://192.168.0.111:3001/ThongTinNhanVien/1 (method:put)
+    	( const id_nhan_vien = req.body.id_nhan_vien )
+
+- Thêm loại nhân viên:
+	http://192.168.0.111:3001/ThongTinNhanVien/1 (method:post)
+
+- Danh sách tài khoản:
+	http://192.168.0.111:3001/DanhSachTaiKhoan (method:post)
+
+- Thêm thông tin tài khoản bao gồm thông tin nhân viên dữ liệu tài khoản đăng nhập:
+	http://192.168.0.111:3001/ThemThongTinTaiKhoanNhanVien (method:post)
+	( const id_loai_nhan_vien = req.params.id_loai_nhan_vien )
+    	( const ten_nhan_vien = req.body.ten_nhan_vien )
+    	( const lien_he = req.body.lien_he )
+    	( const noi_quy = req.body.noi_quy )
+    	( const ten_dang_nhap = req.body.ten_dang_nhap )
+    	( const mat_khau = req.body.mat_khau )
+
+- Mở đóng tài khoản truy cập app tài khoản:
+	http://192.168.0.111:3001/MoDongTaiKhoanTruyCapApp/1/true (method:post)
+	
+
++ tbl_nguoi_dung:
+	id_nguoi_dung
+	ten_dang_nhap
+	mat_khau
+	id_nhan_vien
+	trang_thai
+
++ tbl_nhan_vien:
+	id_nhan_vien
+	id_loai_nhan_vien
+	ten_nhan_vien
+	lien_he
+	noi_quy
+
++ tbl_loai_nhan_vien:
+	id_loai_nhan_vien
+	ten_loai_nhan_vien
+	ghi_chu
+	
++ tbl_du_an: (5)
+	id_du_an
+	ten_cong_viec
+	noi_dung
+
++ tbl_du_an_chi_tiet:
+	id_cong_viec_chi_tiet
+	id_cong_viec
+	id_nhan_vien
+
++ tbl_cong_nhan_vien: (3)
+	id_cong_nhan_vien
+	id_nhan_vien
+
++ tbl_cong_nhan_vien_chi_tiet:
+	id_cong_nhan_vien_chi_tiet
+	gio_vao_cong
+	gio_ra_cong
+	gio_vao_thuc_te
+	gio_ra_thuc_te
+	ngay_lam_viec
+	
+
+	
+	
+	
+	
