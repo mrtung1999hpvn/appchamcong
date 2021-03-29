@@ -78,8 +78,20 @@
 	gio_vao_thuc_te
 	gio_ra_thuc_te
 	ngay_lam_viec
-	
 
++ tbl_thong_bao
+	id_thong_bao
+	ten_thong_bao
+	noi_dung
+	thoi_gian
+
++ tbl_thong_bao_chi_tiet
+	id_thong_bao_chi_tiet
+	id_nhan_vien
+
+
+
+https://www.freemysqlhosting.net/
 	
 	
 	
