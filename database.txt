@@ -37,6 +37,54 @@
 - Mở đóng tài khoản truy cập app tài khoản:
 	http://192.168.0.111:3001/MoDongTaiKhoanTruyCapApp/1/true (method:post)
 	
+http://192.168.0.111:3001/ChamVaoRaCongNhanVien (method:put)
+    const id_cong_nhan = req.params.id_cong_nhan;
+    const ngay_thuc_hien = req.params.ngay_thuc_hien;
+    const trang_thai_vao_ra = req.params.trang_thai_vao_ra === 1 ? true : false;
+    const gio_vao_thuc_te = req.params.gio_vao_thuc_te;
+    const gio_ra_thuc_te = req.params.gio_ra_thuc_te;
+
+http://192.168.0.111:3001/HienThiDuAn (method:get)
+
+http://192.168.0.111:3001/SuaNoiDungDuAn (method:put)
+      const id_du_an = req.body.id_du_an
+      const noi_dung = req.body.noi_dung
+
+http://192.168.0.111:3001/XoaDuAn (method:delete)
+	const id_du_an = req.body.id_du_an
+
+http://192.168.0.111:3001/ThemMoiDuAn (method:post)
+    const ten_du_an = req.body.ten_du_an
+    const noi_dung = req.body.noi_dung
+    const ngay_bat_dau = req.body.ngay_bat_dau //2021-04-01 18:00:00
+
+http://192.168.0.111:3001/ThemNguoiThamGiaDuAn (method:post)
+    const id_du_an = req.body.id_du_an
+    const id_nhan_vien = req.body.ten_du_an
+
+
+http://192.168.0.111:3001/ThemThongBaoMoi (method:post)
+  const ten_thong_bao = req.params.ten_thong_bao
+  const noi_dung = req.params.noi_dung
+  const thoi_gian  = req.params.thoi_gian // 2021-04-01 18:00:00
+
+
+http://192.168.0.111:3001/ThemNguoiNhanThongBao (method:post)
+  const id_thong_bao = req.params.id_thong_bao
+  const id_nhan_vien = req.params.id_nhan_vien
+
+http://192.168.0.111:3001/SuaThongBao (method:put)
+  const id_thong_bao = req.body.id_thong_bao
+  const ten_thong_bao = req.body.ten_thong_bao
+  const noi_dung = req.body.noi_dung
+
+http://192.168.0.111:3001/XoaThongBao (method:delete)
+	const id_thong_bao = req.body.id_thong_bao
+
+
+http://192.168.0.111:3001/HienThiThongBao (method:get)
+
+
 
 + tbl_nguoi_dung:
 	id_nguoi_dung

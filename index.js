@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/Test", async (req, res) => {
   try {
     pool.getConnection((error, connection) => {
-      if (error) throw error;
+      // if (error) throw error;
       connection.query("select * from test", (error, rows) => {
         connection.release();
         if (!error) {
@@ -157,6 +157,54 @@ app.get("/ThongTinNhanVien/:id_nhan_vien", (req, res) => {
   } catch (error) {}
 });
 
+app.put('/SuaThongTinNhanVien',(req,res)=>{
+  try {
+    const id_nhan_vien = req.params.id_nhan_vien;
+    const ten_nhan_vien = req.params.ten_nhan_vien;
+    const lien_he = req.params.lien_he;
+    const noi_quy = req.params.noi_quy;
+    pool.getConnection((error, connection) => {
+      if (error) throw error;
+      connection.query(
+       `
+       update tbl_nhan_vien set ten_nhan_vien = N'${ten_nhan_vien}',lien_he=N'${lien_he}',noi_quy=N'${noi_quy}' WHERE id_nhan_vien = ${id_nhan_vien}
+       `,
+        (error, rows) => {
+          connection.release();
+          if (!error) {
+            console.log(rows);
+            res.send(rows);
+          } else {
+            console.log(error);
+          }
+        }
+      );
+    });
+  } catch (error) {}
+})
+
+app.delete('/XoaThongTinNhanVien',(req,res)=>{
+  try {
+    const id_nhan_vien = req.params.id_nhan_vien;
+    pool.getConnection((error, connection) => {
+      if (error) throw error;
+      connection.query(
+       `
+       delete from tbl_nhan_vien WHERE id_nhan_vien = ${id_nhan_vien}
+       `,
+        (error, rows) => {
+          connection.release();
+          if (!error) {
+            console.log(rows);
+            res.send(rows);
+          } else {
+            console.log(error);
+          }
+        }
+      );
+    });
+  } catch (error) {}
+})
 //#endregion
 
 //#region (2) Chức năng quản lý tài khoản nhân viên
@@ -339,14 +387,12 @@ app.get("/MoDongTaiKhoanTruyCapApp/:id_nguoi_dung/:trang_thai", (req, res) => {
 //#region (3) Quản lý chấm công
 
 // Thêm giờ công nhân viên
-app.get("/ThemGioCongNhanVien", async (req, res) => {
+app.post("/ThemGioCongNhanVien", async (req, res) => {
   try {
-    const id_nguoi_dung = req.params.id_nguoi_dung;
-
-    const id_cong_nhan = req.params.id_cong_nhan;
-    const ngay_thuc_hien = req.params.ngay_thuc_hien;
-    const gio_vao_cong = req.params.gio_vao_cong; // 2020-03-27 08:00
-    const gio_ra_cong = req.params.gio_ra_cong;
+    const id_cong_nhan = req.body.id_cong_nhan;
+    const ngay_thuc_hien = req.body.ngay_thuc_hien;
+    const gio_vao_cong = req.body.gio_vao_cong; // 2020-03-27 08:00
+    const gio_ra_cong = req.body.gio_ra_cong;
     pool.getConnection((error, connection) => {
       if (error) throw error;
       const dl = [];
@@ -382,15 +428,15 @@ app.get("/ThemGioCongNhanVien", async (req, res) => {
   } catch (error) {}
 });
 
-// Hiển thị công theo ngày
-app.put("/HienThiCongTheoNgay", async (req, res) => {
+// Hiển thị công theo ngày cấm công vào ra
+app.put("/ChamVaoRaCongNhanVien", async (req, res) => {
   try {
-    const id_cong_nhan = req.params.id_nguoi_dung;
+    const id_cong_nhan = req.params.id_cong_nhan;
     const ngay_thuc_hien = req.params.ngay_thuc_hien;
     const trang_thai_vao_ra = req.params.trang_thai_vao_ra === 1 ? true : false;
     const gio_vao_thuc_te = req.params.gio_vao_thuc_te;
     const gio_ra_thuc_te = req.params.gio_ra_thuc_te;
-    const ngay_thuc_hien = req.params.ngay_thuc_hien;
+
     pool.getConnection((error, connection) => {
       if (error) throw error;
       connection.query(
@@ -427,15 +473,305 @@ app.put("/HienThiCongTheoNgay", async (req, res) => {
   } catch (error) {}
 });
 
-// Chấm vào công nhân
-
-// Chấm ra công nhân
 //#endregion
 
 //#region (5) Quản lý dự án
+
+// Thêm dự án mới
+app.post('/ThemMoiDuAn' , (req , res)=>{
+  try {
+    const ten_du_an = req.body.ten_du_an
+    const noi_dung = req.body.noi_dung
+    const ngay_bat_dau = req.body.ngay_bat_dau //2021-04-01 18:00:00
+    pool.getConnection((error, connection) => {
+      if (error) throw error;
+      connection.query(
+        `
+          INSERT into tbl_du_an(ten_du_an,noi_dung,ngay_bat_dau,trang_thai)
+          VALUES(N'${ten_du_an}',N'${noi_dung}','${ngay_bat_dau}',N'Đang xử lý')
+        `
+        ,
+        (error, rows) => {
+          connection.release();
+          if (!error) {
+            console.log(rows);
+            res.send(rows);
+          } else {
+            console.log(error);
+          }
+        }
+      );
+    });
+  } catch (error) {}
+})
+// Thêm người tham gia theo id_du_an
+app.post('/ThemNguoiThamGiaDuAn' , (req , res)=>{
+  try {
+    const id_du_an = req.body.id_du_an
+    const id_nhan_vien = req.body.ten_du_an
+    pool.getConnection((error, connection) => {
+      if (error) throw error;
+      connection.query(
+        `
+        INSERT into tbl_du_an_chi_tiet(id_du_an,id_nhan_vien)
+        values(${id_du_an},${id_nhan_vien})
+        `
+        ,
+        (error, rows) => {
+          connection.release();
+          if (!error) {
+            console.log(rows);
+            res.send(rows);
+          } else {
+            console.log(error);
+          }
+        }
+      );
+    });
+  } catch (error) {}
+})
+// Sửa nội dung dự án theo id_du_an
+app.put('/SuaNoiDungDuAn',async(req,res)=>{
+  try {
+      const id_du_an = req.body.id_du_an
+      const noi_dung = req.body.noi_dung
+      pool.getConnection((error, connection) => {
+        if (error) throw error;
+        connection.query(
+          `
+            update tbl_du_an set noi_dung = N'${noi_dung}' where id_du_an = ${id_du_an}
+          `
+          ,
+          (error, rows) => {
+            connection.release();
+            if (!error) {
+              console.log(rows);
+              res.send(rows);
+            } else {
+              console.log(error);
+            }
+          }
+        );
+      });
+  } catch (error) {
+    
+  }
+})
+
+app.delete('/XoaDuAn', (req,res)=>{
+  try {
+    const id_du_an = req.body.id_du_an
+    pool.getConnection((error, connection) => {
+      if (error) throw error;
+      connection.query(
+        `
+        DELETE from tbl_du_an_chi_tiet where id_du_an = ${id_du_an};
+        delete from tbl_du_an where id_du_an = ${id_du_an}
+        `
+        ,
+        (error, rows) => {
+          connection.release();
+          if (!error) {
+            console.log(rows);
+            res.send(rows);
+          } else {
+            console.log(error);
+          }
+        }
+      );
+    });
+  } catch (error) {
+    
+  }
+})
+// Hiển thị danh sách dự án
+app.get('/HienThiDuAn' , (req , res)=>{
+  try {
+    pool.getConnection((error, connection) => {
+      if (error) throw error;
+      connection.query(
+        `
+        select *,DATE_FORMAT(ngay_bat_dau,'%m/%d/%Y %H:%i:%s')"ngay_bat_dau_conv" from tbl_du_an
+        `
+        ,
+        (error, rows) => {
+          connection.release();
+          if (!error) {
+            console.log(rows);
+            res.send(rows);
+          } else {
+            console.log(error);
+          }
+        }
+      );
+    });
+  } catch (error) {}
+})
+
+// Hiển thị nhân viên theo dự án theo id_du_an
+app.get('/HienDanhSachNhanVienTheoDuAn/:id_du_an',async(req,res)=>{
+  try {
+    const id_du_an = req.params.id_du_an
+    pool.getConnection((error, connection) => {
+      if (error) throw error;
+      connection.query(
+        `
+          select * from tbl_du_an,tbl_du_an_chi_tiet
+          where tbl_du_an.id_du_an = tbl_du_an_chi_tiet.id_du_an
+        `
+        ,
+        (error, rows) => {
+          connection.release();
+          if (!error) {
+            console.log(rows);
+            res.send(rows);
+          } else {
+            console.log(error);
+          }
+        }
+      );
+    });
+  } catch (error) {
+    
+  }
+})
 //#endregion
 
 //#region (6) Chức năng thông báo
+
+// Thêm thông báo mới
+app.post('/ThemThongBaoMoi' , (req , res)=>{
+  const ten_thong_bao = req.params.ten_thong_bao
+  const noi_dung = req.params.noi_dung
+  const thoi_gian  = req.params.thoi_gian // 2021-04-01 18:00:00
+
+  pool.getConnection((error, connection) => {
+    if (error) throw error;
+    connection.query(
+      `
+      insert into tbl_thong_bao(ten_thong_bao,noi_dung,thoi_gian)
+      values(N'${ten_thong_bao}',N'${noi_dung}','${thoi_gian}')
+      `
+      ,
+      (error, rows) => {
+        connection.release();
+        if (!error) {
+          console.log(rows);
+          res.send(rows);
+        } else {
+          console.log(error);
+        }
+      }
+    );
+  });
+})
+// Thêm người nhân thông báo
+app.post('/ThemNguoiNhanThongBao' , (req , res)=>{
+  const id_thong_bao = req.params.id_thong_bao
+  const id_nhan_vien = req.params.id_nhan_vien
+
+  pool.getConnection((error, connection) => {
+    if (error) throw error;
+    connection.query(
+      `
+      INSERT into tbl_thong_bao_chi_tiet
+      (
+          id_thong_bao,id_nhan_vien
+      )
+      VALUES(
+          ${id_thong_bao},${id_nhan_vien}
+      )
+      `
+      ,
+      (error, rows) => {
+        connection.release();
+        if (!error) {
+          console.log(rows);
+          res.send(rows);
+        } else {
+          console.log(error);
+        }
+      }
+    );
+  });
+})
+
+app.put('/SuaThongBao' , (req , res)=>{
+try {
+  const id_thong_bao = req.body.id_thong_bao
+  const ten_thong_bao = req.body.ten_thong_bao
+  const noi_dung = req.body.noi_dung
+  pool.getConnection((error, connection) => {
+    if (error) throw error;
+    connection.query(
+      `update tbl_thong_bao SET ten_thong_bao = N'${ten_thong_bao}',
+      noi_dung=N'${noi_dung}' WHERE id_thong_bao = ${id_thong_bao}`
+      ,
+      (error, rows) => {
+        connection.release();
+        if (!error) {
+          console.log(rows);
+          res.send(rows);
+        } else {
+          console.log(error);
+        }
+      }
+    );
+  });
+} catch (error) {}
+})
+app.delete('/XoaThongBao', async(req,res)=>{
+  try {
+    const id_thong_bao = req.body.id_thong_bao
+
+    pool.getConnection((error, connection) => {
+      if (error) throw error;
+      connection.query(
+          `
+          DELETE FROM tbl_thong_bao_chi_tiet WHERE id_thong_bao = ${id_thong_bao};
+          DELETE FROM tbl_thong_bao WHERE id_thong_bao = ${id_thong_bao}
+          `
+        ,
+        (error, rows) => {
+          connection.release();
+          if (!error) {
+            console.log(rows);
+            res.send(rows);
+          } else {
+            console.log(error);
+          }
+        }
+      );
+    });
+  } catch (error) {
+    
+  }
+})
+
+app.get('/HienThiThongBao' , (req , res)=>{
+  try {
+    pool.getConnection((error, connection) => {
+      if (error) throw error;
+      connection.query(
+        `
+          select * from tbl_thong_bao
+        `
+        ,
+        (error, rows) => {
+          connection.release();
+          if (!error) {
+            console.log(rows);
+            res.send(rows);
+          } else {
+            console.log(error);
+          }
+        }
+      );
+    });
+  } catch (error) {
+    
+  }
+})
 //#endregion
 
 //#region (8) Chức năng quản lý điều khoản chính sách
